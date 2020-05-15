@@ -1,4 +1,5 @@
 using EXILED;
+using EXILED.Extensions;
 using System;
 
 namespace SCP198
@@ -14,15 +15,46 @@ namespace SCP198
 
 		public void OnItemPickup( ref PickupItemEvent ev )
 		{
-			if ( !SCPActive && rand.Next( 1, 101 ) <= 5 ) // 5% chance of the item being posessed
+			if ( !SCPActive && ev.Item.ItemId != ItemType.GrenadeFrag && ev.Item.ItemId != ItemType.GrenadeFlash && rand.Next( 1, 101 ) <= 5 ) // 5% chance of the item being posessed
 			{
 				SCPActive = true;
 				SCPID = ev.Item.ItemId;
 				ev.Player.Broadcast( 6, "<color=red>Items of this type have been possessed by SCP-198 and can no longer be dropped!</color>" );
+				foreach ( ReferenceHub hub in Player.GetHubs() )
+				{
+					if ( hub != ev.Player )
+					{
+						try
+						{
+							Item item = hub.inventory.GetItemByID( SCPID );
+							hub.Broadcast( 6, "<color=red>Items of the type " + item.label + " have been possessed by SCP-198 and can no longer be dropped!</color>" );
+						}
+						catch
+						{
+							Log.Error( "Error getting possessed item name." );
+						}
+					}
+				}
 			}
 			if ( SCPActive && ev.Item.ItemId == SCPID )
-			{
 				ev.Player.Broadcast( 6, "<color=red>Items of this type have been possessed by SCP-198 and can no longer be dropped!</color>" );
+		}
+
+		public void OnShoot( ref ShootEvent ev )
+		{
+			if ( SCPActive && ev.Shooter.inventory.GetItemInHand().id == SCPID )
+			{
+				ev.Shooter.Kill();
+				ev.Shooter.Broadcast( 6, "<color=red>You died attempting to forcefully remove SCP-198.</color>" );
+			}
+		}
+
+		public void OnMedicalItemUsed( UsedMedicalItemEvent ev )
+		{
+			if ( SCPActive && ev.ItemType == SCPID )
+			{
+				ev.Player.Kill();
+				ev.Player.Broadcast( 6, "<color=red>You died attempting to forcefully remove SCP-198.</color>" );
 			}
 		}
 
@@ -34,7 +66,6 @@ namespace SCP198
 				ev.Player.Broadcast( 6, "<color=red>This item is possessed by SCP-198 and cannot be dropped.</color>" );
 			}
 		}
-
 
 		public void OnRoundEnd()
 		{

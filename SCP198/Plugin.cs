@@ -12,6 +12,8 @@ namespace SCP198
 			Events.PickupItemEvent += EventHandlers.OnItemPickup;
 			Events.RoundEndEvent += EventHandlers.OnRoundEnd;
 			Events.DropItemEvent += EventHandlers.OnItemDrop;
+			Events.ShootEvent += EventHandlers.OnShoot;
+			Events.UsedMedicalItemEvent += EventHandlers.OnMedicalItemUsed;
 			Log.Info( "Successfully loaded." );
 		}
 
@@ -20,6 +22,8 @@ namespace SCP198
 			Events.PickupItemEvent -= EventHandlers.OnItemPickup;
 			Events.RoundEndEvent -= EventHandlers.OnRoundEnd;
 			Events.DropItemEvent -= EventHandlers.OnItemDrop;
+			Events.ShootEvent -= EventHandlers.OnShoot;
+			Events.UsedMedicalItemEvent -= EventHandlers.OnMedicalItemUsed;
 			EventHandlers = null;
 		}
 
