@@ -29,6 +29,6 @@ namespace SCP198
 
 		public override void OnReload() { }
 
-		public override string getName { get; } = "Sample Plugin";
+		public override string getName { get; } = "SCP198";
 	}
 }
