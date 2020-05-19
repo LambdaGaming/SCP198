@@ -13,9 +13,25 @@ namespace SCP198
 
 		public EventHandlers( Plugin plugin ) => this.plugin = plugin;
 
+		public bool IsBlacklisted( ItemType item )
+		{
+			ItemType[] blacklist = {
+				ItemType.Ammo556,
+				ItemType.Ammo762,
+				ItemType.Ammo9mm,
+				ItemType.GrenadeFlash,
+				ItemType.GrenadeFrag
+			};
+			foreach ( ItemType blacklisted in blacklist )
+			{
+				if ( blacklisted == item ) return true;
+			}
+			return false;
+		}
+
 		public void OnItemPickup( ref PickupItemEvent ev )
 		{
-			if ( !SCPActive && ev.Item.ItemId != ItemType.GrenadeFrag && ev.Item.ItemId != ItemType.GrenadeFlash && rand.Next( 1, 101 ) <= 5 ) // 5% chance of the item being posessed
+			if ( !SCPActive && !IsBlacklisted( ev.Item.ItemId ) && rand.Next( 1, 101 ) <= 5 ) // 5% chance of the item being possessed
 			{
 				SCPActive = true;
 				SCPID = ev.Item.ItemId;
