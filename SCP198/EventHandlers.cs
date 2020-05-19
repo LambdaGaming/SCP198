@@ -3,6 +3,7 @@ using EXILED.Extensions;
 using MEC;
 using System;
 using System.Collections.Generic;
+using static SCP198.Plugin;
 
 namespace SCP198
 {
@@ -33,7 +34,7 @@ namespace SCP198
 
 		public void OnItemPickup( ref PickupItemEvent ev )
 		{
-			if ( !SCPActive && !IsBlacklisted( ev.Item.ItemId ) && rand.Next( 1, 101 ) <= 5 ) // 5% chance of the item being possessed
+			if ( !SCPActive && !IsBlacklisted( ev.Item.ItemId ) && rand.Next( 1, 101 ) <= GetPlugin.SCP198PossessionChance )
 			{
 				SCPActive = true;
 				SCPID = ev.Item.ItemId;
@@ -67,7 +68,7 @@ namespace SCP198
 
 		public void OnShoot( ref ShootEvent ev )
 		{
-			if ( SCPActive && ev.Shooter.inventory.GetItemInHand().id == SCPID )
+			if ( GetPlugin.SCP198ShooterDeath && SCPActive && ev.Shooter.inventory.GetItemInHand().id == SCPID )
 			{
 				Timing.RunCoroutine( KillShooter( ev.Shooter ) );
 			}
@@ -75,7 +76,31 @@ namespace SCP198
 
 		public void OnMedicalItemUsed( UsedMedicalItemEvent ev )
 		{
-			if ( SCPActive && ev.ItemType == SCPID )
+			if ( GetPlugin.SCP198MedicDeath && SCPActive && ev.ItemType == SCPID )
+			{
+				ev.Player.Kill();
+				ev.Player.Broadcast( 6, "<color=red>You died attempting to forcefully remove SCP-198.</color>" );
+			}
+		}
+
+		public void OnItemUpgrade( ref SCP914UpgradeEvent ev )
+		{
+			if ( GetPlugin.SCP198UpgradeDeath && SCPActive )
+			{
+				foreach ( ReferenceHub ply in ev.Players )
+				{
+					if ( ply.inventory.curItem == SCPID )
+					{
+						ply.Kill();
+						ply.Broadcast( 6, "<color=red>You died attempting to forcefully remove SCP-198.</color>" );
+					}
+				}
+			}
+		}
+
+		public void OnDoorInteract( ref DoorInteractionEvent ev )
+		{
+			if ( GetPlugin.SCP198KeycardDeath && SCPActive && ev.Player.inventory.curItem == SCPID )
 			{
 				ev.Player.Kill();
 				ev.Player.Broadcast( 6, "<color=red>You died attempting to forcefully remove SCP-198.</color>" );
