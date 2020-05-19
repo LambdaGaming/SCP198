@@ -1,6 +1,8 @@
 using EXILED;
 using EXILED.Extensions;
+using MEC;
 using System;
+using System.Collections.Generic;
 
 namespace SCP198
 {
@@ -56,12 +58,18 @@ namespace SCP198
 				ev.Player.Broadcast( 6, "<color=red>Items of this type have been possessed by SCP-198 and can no longer be dropped!</color>" );
 		}
 
+		public IEnumerator<float> KillShooter( ReferenceHub shooter )
+		{
+			yield return Timing.WaitForSeconds( 0.5f );
+			shooter.Kill();
+			shooter.Broadcast( 6, "<color=red>You died attempting to forcefully remove SCP-198.</color>" );
+		}
+
 		public void OnShoot( ref ShootEvent ev )
 		{
 			if ( SCPActive && ev.Shooter.inventory.GetItemInHand().id == SCPID )
 			{
-				ev.Shooter.Kill();
-				ev.Shooter.Broadcast( 6, "<color=red>You died attempting to forcefully remove SCP-198.</color>" );
+				Timing.RunCoroutine( KillShooter( ev.Shooter ) );
 			}
 		}
 
