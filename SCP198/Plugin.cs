@@ -4,20 +4,22 @@ namespace SCP198
 {
 	public class Plugin : EXILED.Plugin
 	{
-		public static Plugin GetPlugin { private set; get; }
 		public EventHandlers EventHandlers;
-		public bool SCP198Enabled = Config.GetBool( "198_enabled", true );
-		public bool SCP198ShooterDeath = Config.GetBool( "198_shooter_death", true );
-		public bool SCP198MedicDeath = Config.GetBool( "198_medic_death", true );
-		public bool SCP198UpgradeDeath = Config.GetBool( "198_upgrade_death", true );
-		public bool SCP198KeycardDeath = Config.GetBool( "198_keycard_death", true );
-		public int SCP198PossessionChance = Config.GetInt( "198_possession_chance", 5 );
+		public bool SCP198ShooterDeath;
+		public bool SCP198MedicDeath;
+		public bool SCP198UpgradeDeath;
+		public bool SCP198KeycardDeath;
+		public int SCP198PossessionChance;
 
 		public override void OnEnable()
 		{
-			if ( !SCP198Enabled ) return;
+			if ( !Config.GetBool( "198_enabled", true ) ) return;
+			SCP198ShooterDeath = Config.GetBool( "198_shooter_death", true );
+			SCP198MedicDeath = Config.GetBool( "198_medic_death", true );
+			SCP198UpgradeDeath = Config.GetBool( "198_upgrade_death", true );
+			SCP198KeycardDeath = Config.GetBool( "198_keycard_death", true );
+			SCP198PossessionChance = Config.GetInt( "198_possession_chance", 5 );
 			EventHandlers = new EventHandlers( this );
-			GetPlugin = this;
 			Events.PickupItemEvent += EventHandlers.OnItemPickup;
 			Events.RoundEndEvent += EventHandlers.OnRoundEnd;
 			Events.DropItemEvent += EventHandlers.OnItemDrop;
@@ -38,7 +40,6 @@ namespace SCP198
 			Events.Scp914UpgradeEvent -= EventHandlers.OnItemUpgrade;
 			Events.DoorInteractEvent -= EventHandlers.OnDoorInteract;
 			EventHandlers = null;
-			GetPlugin = null;
 		}
 
 		public override void OnReload() { }
