@@ -1,4 +1,6 @@
 using EXILED;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SCP198
 {
@@ -10,6 +12,8 @@ namespace SCP198
 		public bool SCP198UpgradeDeath;
 		public bool SCP198KeycardDeath;
 		public int SCP198PossessionChance;
+		public int SCP198UpgradeDeathChance;
+		public List<string> SCP198BlacklistedItems;
 
 		public override void OnEnable()
 		{
@@ -19,6 +23,9 @@ namespace SCP198
 			SCP198UpgradeDeath = Config.GetBool( "198_upgrade_death", true );
 			SCP198KeycardDeath = Config.GetBool( "198_keycard_death", true );
 			SCP198PossessionChance = Config.GetInt( "198_possession_chance", 5 );
+			SCP198UpgradeDeathChance = Config.GetInt( "198_upgrade_death_chance", 50 );
+			SCP198BlacklistedItems = Config.GetString( "198_blacklist" ).Split( ',' ).ToList();
+
 			EventHandlers = new EventHandlers( this );
 			Events.PickupItemEvent += EventHandlers.OnItemPickup;
 			Events.RoundEndEvent += EventHandlers.OnRoundEnd;

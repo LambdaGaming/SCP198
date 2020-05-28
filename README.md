@@ -17,3 +17,5 @@ Name | Type | Default Value | Description
 198_upgrade_death | bool | true | Whether or not players should die when upgrading a possessed item in SCP-914.
 198_keycard_death | bool | true | Whether or not players should die when opening a door with a possessed keycard.
 198_possession_chance | int | 5 | Chance out of 100 of an item getting possessed when a player picks it up.
+198_upgrade_death_chance | int | 50 | Chance out of 100 of a player dying when upgrading a possessed item in SCP-914.
+198_blacklist | string list | N/A | List of items that shouldn't get possessed.

@@ -3,7 +3,6 @@ using EXILED.Extensions;
 using MEC;
 using System;
 using System.Collections.Generic;
-using static SCP198.Plugin;
 
 namespace SCP198
 {
@@ -18,18 +17,35 @@ namespace SCP198
 
 		public bool IsBlacklisted( ItemType item )
 		{
+			List<ItemType> CustomBlacklist = ConvertToItems( plugin.SCP198BlacklistedItems );
 			ItemType[] blacklist = {
-				ItemType.Ammo556,
+				ItemType.Ammo556, // Ammo is blacklisted since you can't drop it by default
 				ItemType.Ammo762,
 				ItemType.Ammo9mm,
-				ItemType.GrenadeFlash,
+				ItemType.GrenadeFlash, // Grenades are blacklisted because the grenade throw event doesn't track the player that threw it
 				ItemType.GrenadeFrag
 			};
+
 			foreach ( ItemType blacklisted in blacklist )
-			{
 				if ( blacklisted == item ) return true;
+
+			if ( CustomBlacklist != null && !CustomBlacklist.IsEmpty() )
+			{
+				foreach ( ItemType blacklisted in CustomBlacklist )
+					if ( blacklisted == item ) return true;
 			}
 			return false;
+		}
+
+		public List<ItemType> ConvertToItems( List<string> blacklist )
+		{
+			if ( blacklist == null ) return null;
+			List<ItemType> ItemList = new List<ItemType>();
+
+			foreach ( string item in blacklist )
+				ItemList.Add( ( ItemType ) Enum.Parse( typeof( ItemType ), item, true ) );
+
+			return ItemList;
 		}
 
 		public void OnItemPickup( ref PickupItemEvent ev )
@@ -69,9 +85,7 @@ namespace SCP198
 		public void OnShoot( ref ShootEvent ev )
 		{
 			if ( plugin.SCP198ShooterDeath && SCPActive && ev.Shooter.inventory.GetItemInHand().id == SCPID )
-			{
 				Timing.RunCoroutine( KillShooter( ev.Shooter ) );
-			}
 		}
 
 		public void OnMedicalItemUsed( UsedMedicalItemEvent ev )
@@ -87,12 +101,17 @@ namespace SCP198
 		{
 			if ( plugin.SCP198UpgradeDeath && SCPActive )
 			{
-				foreach ( ReferenceHub ply in ev.Players )
+				int chance = plugin.SCP198UpgradeDeathChance;
+				int randchance = rand.Next( 0, 101 );
+				if ( randchance <= chance )
 				{
-					if ( ply.inventory.curItem == SCPID )
+					foreach ( ReferenceHub ply in ev.Players )
 					{
-						ply.Kill();
-						ply.Broadcast( 6, "<color=red>You died attempting to forcefully remove SCP-198.</color>" );
+						if ( ply.inventory.GetItemInHand().id == SCPID )
+						{
+							ply.Kill();
+							ply.Broadcast( 6, "<color=red>You died attempting to forcefully remove SCP-198.</color>" );
+						}
 					}
 				}
 			}
@@ -100,7 +119,7 @@ namespace SCP198
 
 		public void OnDoorInteract( ref DoorInteractionEvent ev )
 		{
-			if ( plugin.SCP198KeycardDeath && SCPActive && ev.Player.inventory.curItem == SCPID )
+			if ( plugin.SCP198KeycardDeath && SCPActive && ev.Player.inventory.GetItemInHand().id == SCPID )
 			{
 				ev.Player.Kill();
 				ev.Player.Broadcast( 6, "<color=red>You died attempting to forcefully remove SCP-198.</color>" );
