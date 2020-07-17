@@ -1,5 +1,5 @@
-using EXILED;
-using EXILED.Extensions;
+﻿using Exiled.API.Features;
+using Exiled.Events.EventArgs;
 using MEC;
 using System;
 using System.Collections.Generic;
@@ -8,7 +8,7 @@ namespace SCP198
 {
 	public class EventHandlers
 	{
-		public Plugin plugin;
+		private Plugin plugin;
 		Random rand = new Random();
 		bool SCPActive = false;
 		ItemType SCPID;
@@ -17,13 +17,11 @@ namespace SCP198
 
 		public bool IsBlacklisted( ItemType item )
 		{
-			List<ItemType> CustomBlacklist = ConvertToItems( plugin.SCP198BlacklistedItems );
+			List<ItemType> CustomBlacklist = ConvertToItems( plugin.Config.BlacklistedItems );
 			ItemType[] blacklist = {
 				ItemType.Ammo556, // Ammo is blacklisted since you can't drop it by default
 				ItemType.Ammo762,
-				ItemType.Ammo9mm,
-				ItemType.GrenadeFlash, // Grenades are blacklisted because the grenade throw event doesn't track the player that threw it
-				ItemType.GrenadeFrag
+				ItemType.Ammo9mm
 			};
 
 			foreach ( ItemType blacklisted in blacklist )
@@ -48,21 +46,21 @@ namespace SCP198
 			return ItemList;
 		}
 
-		public void OnItemPickup( ref PickupItemEvent ev )
+		public void OnItemPickup( PickingUpItemEventArgs ev )
 		{
-			if ( !SCPActive && !IsBlacklisted( ev.Item.ItemId ) && rand.Next( 1, 101 ) <= plugin.SCP198PossessionChance )
+			if ( !SCPActive && !IsBlacklisted( ev.Pickup.ItemId ) && rand.Next( 1, 101 ) <= plugin.Config.PossessionChance )
 			{
 				SCPActive = true;
-				SCPID = ev.Item.ItemId;
+				SCPID = ev.Pickup.ItemId;
 				ev.Player.Broadcast( 6, "<color=red>Items of this type have been possessed by SCP-198 and can no longer be dropped!</color>" );
-				foreach ( ReferenceHub hub in Player.GetHubs() )
+				foreach ( Player ply in Player.List )
 				{
-					if ( hub != ev.Player )
+					if ( ply != ev.Player )
 					{
 						try
 						{
-							Item item = hub.inventory.GetItemByID( SCPID );
-							hub.Broadcast( 6, "<color=red>Items of the type " + item.label + " have been possessed by SCP-198 and can no longer be dropped!</color>" );
+							Item item = ply.Inventory.GetItemByID( SCPID );
+							ply.Broadcast( 6, "<color=red>Items of the type " + item.label + " have been possessed by SCP-198 and can no longer be dropped!</color>" );
 						}
 						catch
 						{
@@ -71,43 +69,50 @@ namespace SCP198
 					}
 				}
 			}
-			if ( SCPActive && ev.Item.ItemId == SCPID )
+			if ( SCPActive && ev.Pickup.ItemId == SCPID )
 				ev.Player.Broadcast( 6, "<color=red>Items of this type have been possessed by SCP-198 and can no longer be dropped!</color>" );
 		}
 
-		public IEnumerator<float> KillShooter( ReferenceHub shooter )
+		public IEnumerator<float> KillShooter( Player shooter )
 		{
 			yield return Timing.WaitForSeconds( 0.5f );
 			shooter.Kill();
 			shooter.Broadcast( 6, "<color=red>You died attempting to forcefully remove SCP-198.</color>" );
 		}
 
-		public void OnShoot( ref ShootEvent ev )
+		public void OnShoot( ShotEventArgs ev )
 		{
-			if ( plugin.SCP198ShooterDeath && SCPActive && ev.Shooter.inventory.GetItemInHand().id == SCPID )
+			Log.Warn( ev.Shooter.Inventory.GetItemInHand().id.ToString() );
+			if ( plugin.Config.ShooterDeath && SCPActive && ev.Shooter.Inventory.GetItemInHand().id == SCPID )
 				Timing.RunCoroutine( KillShooter( ev.Shooter ) );
 		}
 
-		public void OnMedicalItemUsed( UsedMedicalItemEvent ev )
+		public void OnThrowGrenade( ThrowingGrenadeEventArgs ev )
 		{
-			if ( plugin.SCP198MedicDeath && SCPActive && ev.ItemType == SCPID )
+			if ( plugin.Config.GrenadeDeath && SCPActive && ev.Player.Inventory.GetItemInHand().id == SCPID )
+				Timing.RunCoroutine( KillShooter( ev.Player ) );
+		}
+
+		public void OnMedicalItemUsed( UsedMedicalItemEventArgs ev )
+		{
+			if ( plugin.Config.MedicDeath && SCPActive && ev.Player.Inventory.GetItemInHand().id == SCPID )
 			{
 				ev.Player.Kill();
 				ev.Player.Broadcast( 6, "<color=red>You died attempting to forcefully remove SCP-198.</color>" );
 			}
 		}
 
-		public void OnItemUpgrade( ref SCP914UpgradeEvent ev )
+		public void OnItemUpgrade( UpgradingItemsEventArgs ev )
 		{
-			if ( plugin.SCP198UpgradeDeath && SCPActive )
+			if ( plugin.Config.UpgradeDeath && SCPActive )
 			{
-				int chance = plugin.SCP198UpgradeDeathChance;
+				int chance = plugin.Config.UpgradeDeathChance;
 				int randchance = rand.Next( 0, 101 );
 				if ( randchance <= chance )
 				{
-					foreach ( ReferenceHub ply in ev.Players )
+					foreach ( Player ply in ev.Players )
 					{
-						if ( ply.inventory.GetItemInHand().id == SCPID )
+						if ( ply.Inventory.GetItemInHand().id == SCPID )
 						{
 							ply.Kill();
 							ply.Broadcast( 6, "<color=red>You died attempting to forcefully remove SCP-198.</color>" );
@@ -117,25 +122,25 @@ namespace SCP198
 			}
 		}
 
-		public void OnDoorInteract( ref DoorInteractionEvent ev )
+		public void OnDoorInteract( InteractingDoorEventArgs ev )
 		{
-			if ( plugin.SCP198KeycardDeath && SCPActive && ev.Player.inventory.GetItemInHand().id == SCPID )
+			if ( plugin.Config.KeycardDeath && SCPActive && ev.Player.Inventory.GetItemInHand().id == SCPID )
 			{
 				ev.Player.Kill();
 				ev.Player.Broadcast( 6, "<color=red>You died attempting to forcefully remove SCP-198.</color>" );
 			}
 		}
 
-		public void OnItemDrop( ref DropItemEvent ev )
+		public void OnItemDrop( DroppingItemEventArgs ev )
 		{
-			if ( ev.Item.id == SCPID ) // Unforunately I have to make it so all of one item type is posessed since the pickup item event doesn't support the item's unique ID
+			if ( ev.Item.id == SCPID )
 			{
-				ev.Allow = false;
+				ev.IsAllowed = false;
 				ev.Player.Broadcast( 6, "<color=red>This item is possessed by SCP-198 and cannot be dropped.</color>" );
 			}
 		}
 
-		public void OnRoundEnd()
+		public void OnRoundEnd( EndingRoundEventArgs ev )
 		{
 			SCPActive = false;
 			SCPID = 0;

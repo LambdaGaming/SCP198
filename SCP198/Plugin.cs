@@ -1,56 +1,43 @@
-using EXILED;
-using System.Collections.Generic;
-using System.Linq;
+using Exiled.API.Enums;
+using Exiled.API.Features;
+using events = Exiled.Events.Handlers;
 
 namespace SCP198
 {
-	public class Plugin : EXILED.Plugin
+	public class Plugin : Plugin<Config>
 	{
-		public EventHandlers EventHandlers;
-		public bool SCP198ShooterDeath;
-		public bool SCP198MedicDeath;
-		public bool SCP198UpgradeDeath;
-		public bool SCP198KeycardDeath;
-		public int SCP198PossessionChance;
-		public int SCP198UpgradeDeathChance;
-		public List<string> SCP198BlacklistedItems;
+		private EventHandlers EventHandlers;
 
-		public override void OnEnable()
+		public override PluginPriority Priority { get; } = PluginPriority.Medium;
+
+		public override void OnEnabled()
 		{
-			if ( !Config.GetBool( "198_enabled", true ) ) return;
-			SCP198ShooterDeath = Config.GetBool( "198_shooter_death", true );
-			SCP198MedicDeath = Config.GetBool( "198_medic_death", true );
-			SCP198UpgradeDeath = Config.GetBool( "198_upgrade_death", true );
-			SCP198KeycardDeath = Config.GetBool( "198_keycard_death", true );
-			SCP198PossessionChance = Config.GetInt( "198_possession_chance", 5 );
-			SCP198UpgradeDeathChance = Config.GetInt( "198_upgrade_death_chance", 50 );
-			SCP198BlacklistedItems = Config.GetString( "198_blacklist" ).Split( ',' ).ToList();
-
+			base.OnEnabled();
 			EventHandlers = new EventHandlers( this );
-			Events.PickupItemEvent += EventHandlers.OnItemPickup;
-			Events.RoundEndEvent += EventHandlers.OnRoundEnd;
-			Events.DropItemEvent += EventHandlers.OnItemDrop;
-			Events.ShootEvent += EventHandlers.OnShoot;
-			Events.UsedMedicalItemEvent += EventHandlers.OnMedicalItemUsed;
-			Events.Scp914UpgradeEvent += EventHandlers.OnItemUpgrade;
-			Events.DoorInteractEvent += EventHandlers.OnDoorInteract;
-			Log.Info( "Successfully loaded." );
+			EventHandlers = new EventHandlers( this );
+			events.Player.PickingUpItem += EventHandlers.OnItemPickup;
+			events.Server.EndingRound += EventHandlers.OnRoundEnd;
+			events.Player.DroppingItem += EventHandlers.OnItemDrop;
+			events.Player.Shot += EventHandlers.OnShoot;
+			events.Player.ThrowingGrenade += EventHandlers.OnThrowGrenade;
+			events.Player.MedicalItemUsed += EventHandlers.OnMedicalItemUsed;
+			events.Scp914.UpgradingItems += EventHandlers.OnItemUpgrade;
+			events.Player.InteractingDoor += EventHandlers.OnDoorInteract;
+			Log.Info( $"Successfully loaded." );
 		}
 
-		public override void OnDisable()
+		public override void OnDisabled()
 		{
-			Events.PickupItemEvent -= EventHandlers.OnItemPickup;
-			Events.RoundEndEvent -= EventHandlers.OnRoundEnd;
-			Events.DropItemEvent -= EventHandlers.OnItemDrop;
-			Events.ShootEvent -= EventHandlers.OnShoot;
-			Events.UsedMedicalItemEvent -= EventHandlers.OnMedicalItemUsed;
-			Events.Scp914UpgradeEvent -= EventHandlers.OnItemUpgrade;
-			Events.DoorInteractEvent -= EventHandlers.OnDoorInteract;
+			base.OnDisabled();
+			events.Player.PickingUpItem -= EventHandlers.OnItemPickup;
+			events.Server.EndingRound -= EventHandlers.OnRoundEnd;
+			events.Player.DroppingItem -= EventHandlers.OnItemDrop;
+			events.Player.Shooting -= EventHandlers.OnShoot;
+			events.Player.ThrowingGrenade -= EventHandlers.OnThrowGrenade;
+			events.Player.UsingMedicalItem -= EventHandlers.OnMedicalItemUsed;
+			events.Scp914.UpgradingItems -= EventHandlers.OnItemUpgrade;
+			events.Player.InteractingDoor -= EventHandlers.OnDoorInteract;
 			EventHandlers = null;
 		}
-
-		public override void OnReload() { }
-
-		public override string getName { get; } = "SCP198";
 	}
 }
