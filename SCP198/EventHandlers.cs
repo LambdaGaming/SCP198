@@ -82,20 +82,19 @@ namespace SCP198
 
 		public void OnShoot( ShotEventArgs ev )
 		{
-			Log.Warn( ev.Shooter.Inventory.GetItemInHand().id.ToString() );
-			if ( plugin.Config.ShooterDeath && SCPActive && ev.Shooter.Inventory.GetItemInHand().id == SCPID )
+			if ( plugin.Config.ShooterDeath && SCPActive && ev.Shooter.Inventory.curItem == SCPID )
 				Timing.RunCoroutine( KillShooter( ev.Shooter ) );
 		}
 
 		public void OnThrowGrenade( ThrowingGrenadeEventArgs ev )
 		{
-			if ( plugin.Config.GrenadeDeath && SCPActive && ev.Player.Inventory.GetItemInHand().id == SCPID )
+			if ( plugin.Config.GrenadeDeath && SCPActive && ev.Player.Inventory.curItem == SCPID )
 				Timing.RunCoroutine( KillShooter( ev.Player ) );
 		}
 
 		public void OnMedicalItemUsed( UsedMedicalItemEventArgs ev )
 		{
-			if ( plugin.Config.MedicDeath && SCPActive && ev.Player.Inventory.GetItemInHand().id == SCPID )
+			if ( plugin.Config.MedicDeath && SCPActive && ev.Player.Inventory.curItem == SCPID )
 			{
 				ev.Player.Kill();
 				ev.Player.Broadcast( 6, "<color=red>You died attempting to forcefully remove SCP-198.</color>" );
@@ -112,7 +111,7 @@ namespace SCP198
 				{
 					foreach ( Player ply in ev.Players )
 					{
-						if ( ply.Inventory.GetItemInHand().id == SCPID )
+						if ( ply.Inventory.curItem == SCPID )
 						{
 							ply.Kill();
 							ply.Broadcast( 6, "<color=red>You died attempting to forcefully remove SCP-198.</color>" );
@@ -124,7 +123,7 @@ namespace SCP198
 
 		public void OnDoorInteract( InteractingDoorEventArgs ev )
 		{
-			if ( plugin.Config.KeycardDeath && SCPActive && ev.Player.Inventory.GetItemInHand().id == SCPID )
+			if ( plugin.Config.KeycardDeath && SCPActive && ev.Player.Inventory.curItem == SCPID )
 			{
 				ev.Player.Kill();
 				ev.Player.Broadcast( 6, "<color=red>You died attempting to forcefully remove SCP-198.</color>" );

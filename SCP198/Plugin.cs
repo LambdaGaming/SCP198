@@ -32,7 +32,7 @@ namespace SCP198
 			events.Player.PickingUpItem -= EventHandlers.OnItemPickup;
 			events.Server.EndingRound -= EventHandlers.OnRoundEnd;
 			events.Player.DroppingItem -= EventHandlers.OnItemDrop;
-			events.Player.Shooting -= EventHandlers.OnShoot;
+			events.Player.Shot -= EventHandlers.OnShoot;
 			events.Player.ThrowingGrenade -= EventHandlers.OnThrowGrenade;
 			events.Player.UsingMedicalItem -= EventHandlers.OnMedicalItemUsed;
 			events.Scp914.UpgradingItems -= EventHandlers.OnItemUpgrade;
