@@ -23,6 +23,7 @@ namespace SCP198
 			events.Player.MedicalItemUsed += EventHandlers.OnMedicalItemUsed;
 			events.Scp914.UpgradingItems += EventHandlers.OnItemUpgrade;
 			events.Player.InteractingDoor += EventHandlers.OnDoorInteract;
+			events.Server.RoundStarted += EventHandlers.OnRoundStart;
 			Log.Info( $"Successfully loaded." );
 		}
 
@@ -37,6 +38,7 @@ namespace SCP198
 			events.Player.UsingMedicalItem -= EventHandlers.OnMedicalItemUsed;
 			events.Scp914.UpgradingItems -= EventHandlers.OnItemUpgrade;
 			events.Player.InteractingDoor -= EventHandlers.OnDoorInteract;
+			events.Server.RoundStarted -= EventHandlers.OnRoundStart;
 			EventHandlers = null;
 		}
 	}

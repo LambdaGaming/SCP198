@@ -48,57 +48,67 @@ namespace SCP198
 
 		public void OnItemPickup( PickingUpItemEventArgs ev )
 		{
-			if ( !SCPActive && !IsBlacklisted( ev.Pickup.ItemId ) && rand.Next( 1, 101 ) <= plugin.Config.PossessionChance )
+			if ( SCPActive )
 			{
-				SCPActive = true;
-				SCPID = ev.Pickup.ItemId;
-				ev.Player.Broadcast( 6, "<color=red>Items of this type have been possessed by SCP-198 and can no longer be dropped!</color>" );
-				foreach ( Player ply in Player.List )
+				if ( ev.Pickup.ItemId == SCPID )
+					ev.Player.Broadcast( 6, "<color=red>Items of this type have been possessed by SCP-198 and can no longer be dropped!</color>" );
+			}
+			else
+			{
+				int infectchance = rand.Next( 1, 101 );
+				if ( !IsBlacklisted( ev.Pickup.ItemId ) && infectchance <= plugin.Config.PossessionChance )
 				{
-					if ( ply != ev.Player )
+					SCPActive = true;
+					SCPID = ev.Pickup.ItemId;
+					ev.Player.Broadcast( 6, "<color=red>Items of this type have been possessed by SCP-198 and can no longer be dropped!</color>" );
+					foreach ( Player ply in Player.List )
 					{
-						try
+						if ( ply != ev.Player )
 						{
-							Item item = ply.Inventory.GetItemByID( SCPID );
-							ply.Broadcast( 6, "<color=red>Items of the type " + item.label + " have been possessed by SCP-198 and can no longer be dropped!</color>" );
-						}
-						catch
-						{
-							Log.Error( "Error getting possessed item name." );
+							try
+							{
+								Item item = ply.Inventory.GetItemByID( SCPID );
+								ply.Broadcast( 6, "<color=red>Items of the type " + item.label + " have been possessed by SCP-198 and can no longer be dropped!</color>" );
+							}
+							catch
+							{
+								Log.Error( "Error getting possessed item name." );
+							}
 						}
 					}
 				}
 			}
-			if ( SCPActive && ev.Pickup.ItemId == SCPID )
-				ev.Player.Broadcast( 6, "<color=red>Items of this type have been possessed by SCP-198 and can no longer be dropped!</color>" );
 		}
 
-		public IEnumerator<float> KillShooter( Player shooter )
+		public IEnumerator<float> KillUser( Player ply )
 		{
 			yield return Timing.WaitForSeconds( 0.5f );
-			shooter.Kill();
-			shooter.Broadcast( 6, "<color=red>You died attempting to forcefully remove SCP-198.</color>" );
+			ply.Kill();
+			ply.Broadcast( 6, "<color=red>You died attempting to forcefully remove SCP-198.</color>" );
 		}
 
 		public void OnShoot( ShotEventArgs ev )
 		{
 			if ( plugin.Config.ShooterDeath && SCPActive && ev.Shooter.Inventory.curItem == SCPID )
-				Timing.RunCoroutine( KillShooter( ev.Shooter ) );
+				Timing.RunCoroutine( KillUser( ev.Shooter ) );
 		}
 
 		public void OnThrowGrenade( ThrowingGrenadeEventArgs ev )
 		{
 			if ( plugin.Config.GrenadeDeath && SCPActive && ev.Player.Inventory.curItem == SCPID )
-				Timing.RunCoroutine( KillShooter( ev.Player ) );
+				Timing.RunCoroutine( KillUser( ev.Player ) );
 		}
 
 		public void OnMedicalItemUsed( UsedMedicalItemEventArgs ev )
 		{
 			if ( plugin.Config.MedicDeath && SCPActive && ev.Player.Inventory.curItem == SCPID )
-			{
-				ev.Player.Kill();
-				ev.Player.Broadcast( 6, "<color=red>You died attempting to forcefully remove SCP-198.</color>" );
-			}
+				Timing.RunCoroutine( KillUser( ev.Player ) );
+		}
+
+		public void OnDoorInteract( InteractingDoorEventArgs ev )
+		{
+			if ( plugin.Config.KeycardDeath && SCPActive && ev.Player.Inventory.curItem == SCPID )
+				Timing.RunCoroutine( KillUser( ev.Player ) );
 		}
 
 		public void OnItemUpgrade( UpgradingItemsEventArgs ev )
@@ -113,20 +123,10 @@ namespace SCP198
 					{
 						if ( ply.Inventory.curItem == SCPID )
 						{
-							ply.Kill();
-							ply.Broadcast( 6, "<color=red>You died attempting to forcefully remove SCP-198.</color>" );
+							Timing.RunCoroutine( KillUser( ply ) );
 						}
 					}
 				}
-			}
-		}
-
-		public void OnDoorInteract( InteractingDoorEventArgs ev )
-		{
-			if ( plugin.Config.KeycardDeath && SCPActive && ev.Player.Inventory.curItem == SCPID )
-			{
-				ev.Player.Kill();
-				ev.Player.Broadcast( 6, "<color=red>You died attempting to forcefully remove SCP-198.</color>" );
 			}
 		}
 
@@ -143,6 +143,16 @@ namespace SCP198
 		{
 			SCPActive = false;
 			SCPID = 0;
+		}
+
+		public void OnRoundStart()
+		{
+			if ( SCPActive || SCPID != 0 )
+			{
+				SCPActive = false;
+				SCPID = 0;
+				Log.Warn( "SCP-198 was not reset after the round ended. Resetting now..." );
+			}
 		}
 	}
 }
