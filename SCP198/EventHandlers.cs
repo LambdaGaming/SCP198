@@ -50,7 +50,7 @@ namespace SCP198
 		{
 			if ( SCPActive )
 			{
-				if ( ev.Pickup.ItemId == SCPID )
+				if ( ev.Pickup.ItemId == SCPID && !plugin.Config.SuppressNotifications )
 					ev.Player.Broadcast( 6, "<color=red>Items of this type have been possessed by SCP-198 and can no longer be dropped!</color>" );
 			}
 			else
@@ -60,19 +60,22 @@ namespace SCP198
 				{
 					SCPActive = true;
 					SCPID = ev.Pickup.ItemId;
-					ev.Player.Broadcast( 6, "<color=red>Items of this type have been possessed by SCP-198 and can no longer be dropped!</color>" );
-					foreach ( Player ply in Player.List )
+					if ( !plugin.Config.SuppressNotifications )
 					{
-						if ( ply != ev.Player )
+						ev.Player.Broadcast( 6, "<color=red>Items of this type have been possessed by SCP-198 and can no longer be dropped!</color>" );
+						foreach ( Player ply in Player.List )
 						{
-							try
+							if ( ply != ev.Player )
 							{
-								Item item = ply.Inventory.GetItemByID( SCPID );
-								ply.Broadcast( 6, "<color=red>Items of the type " + item.label + " have been possessed by SCP-198 and can no longer be dropped!</color>" );
-							}
-							catch
-							{
-								Log.Error( "Error getting possessed item name." );
+								try
+								{
+									Item item = ply.Inventory.GetItemByID( SCPID );
+									ply.Broadcast( 6, "<color=red>Items of the type " + item.label + " have been possessed by SCP-198 and can no longer be dropped!</color>" );
+								}
+								catch
+								{
+									Log.Error( "Error getting possessed item name." );
+								}
 							}
 						}
 					}
@@ -84,7 +87,8 @@ namespace SCP198
 		{
 			yield return Timing.WaitForSeconds( 0.5f );
 			ply.Kill();
-			ply.Broadcast( 6, "<color=red>You died attempting to forcefully remove SCP-198.</color>" );
+			if ( !plugin.Config.SuppressNotifications )
+				ply.Broadcast( 6, "<color=red>You died attempting to forcefully remove SCP-198.</color>" );
 		}
 
 		public void OnShoot( ShotEventArgs ev )
@@ -135,7 +139,8 @@ namespace SCP198
 			if ( ev.Item.id == SCPID )
 			{
 				ev.IsAllowed = false;
-				ev.Player.Broadcast( 6, "<color=red>This item is possessed by SCP-198 and cannot be dropped.</color>" );
+				if ( !plugin.Config.SuppressNotifications )
+					ev.Player.Broadcast( 6, "<color=red>This item is possessed by SCP-198 and cannot be dropped.</color>" );
 			}
 		}
 
