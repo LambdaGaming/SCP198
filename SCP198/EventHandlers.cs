@@ -11,7 +11,7 @@ namespace SCP198
 		private Plugin plugin;
 		Random rand = new Random();
 		bool SCPActive = false;
-		ItemType SCPID;
+		ItemType SCPID = ItemType.None;
 
 		public EventHandlers( Plugin plugin ) => this.plugin = plugin;
 
@@ -147,15 +147,15 @@ namespace SCP198
 		public void OnRoundEnd( EndingRoundEventArgs ev )
 		{
 			SCPActive = false;
-			SCPID = 0;
+			SCPID = ItemType.None;
 		}
 
 		public void OnRoundStart()
 		{
-			if ( SCPActive || SCPID != 0 )
+			if ( SCPActive || SCPID != ItemType.None )
 			{
 				SCPActive = false;
-				SCPID = 0;
+				SCPID = ItemType.None;
 				Log.Warn( "SCP-198 was not reset after the round ended. Resetting now..." );
 			}
 		}
