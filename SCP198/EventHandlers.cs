@@ -10,8 +10,8 @@ namespace SCP198
 	{
 		private Plugin plugin;
 		Random rand = new Random();
-		bool SCPActive = false;
-		ItemType SCPID = ItemType.None;
+		static bool SCPActive = false;
+		static ItemType SCPID = ItemType.None;
 
 		public EventHandlers( Plugin plugin ) => this.plugin = plugin;
 
