@@ -16,7 +16,7 @@ namespace SCP198
 			EventHandlers = new EventHandlers( this );
 			EventHandlers = new EventHandlers( this );
 			events.Player.PickingUpItem += EventHandlers.OnItemPickup;
-			events.Server.EndingRound += EventHandlers.OnRoundEnd;
+			events.Server.RoundEnded += EventHandlers.OnRoundEnd;
 			events.Player.DroppingItem += EventHandlers.OnItemDrop;
 			events.Player.Shot += EventHandlers.OnShoot;
 			events.Player.ThrowingGrenade += EventHandlers.OnThrowGrenade;
@@ -31,7 +31,7 @@ namespace SCP198
 		{
 			base.OnDisabled();
 			events.Player.PickingUpItem -= EventHandlers.OnItemPickup;
-			events.Server.EndingRound -= EventHandlers.OnRoundEnd;
+			events.Server.RoundEnded -= EventHandlers.OnRoundEnd;
 			events.Player.DroppingItem -= EventHandlers.OnItemDrop;
 			events.Player.Shot -= EventHandlers.OnShoot;
 			events.Player.ThrowingGrenade -= EventHandlers.OnThrowGrenade;

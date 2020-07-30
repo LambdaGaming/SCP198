@@ -144,7 +144,7 @@ namespace SCP198
 			}
 		}
 
-		public void OnRoundEnd( EndingRoundEventArgs ev )
+		public void OnRoundEnd( RoundEndedEventArgs ev )
 		{
 			SCPActive = false;
 			SCPID = ItemType.None;
