@@ -24,6 +24,7 @@ namespace SCP198
 			events.Scp914.UpgradingItems += EventHandlers.OnItemUpgrade;
 			events.Player.InteractingDoor += EventHandlers.OnDoorInteract;
 			events.Server.RoundStarted += EventHandlers.OnRoundStart;
+			events.Player.Died += EventHandlers.OnPlayerDeath;
 			Log.Info( $"Successfully loaded." );
 		}
 
@@ -39,6 +40,7 @@ namespace SCP198
 			events.Scp914.UpgradingItems -= EventHandlers.OnItemUpgrade;
 			events.Player.InteractingDoor -= EventHandlers.OnDoorInteract;
 			events.Server.RoundStarted -= EventHandlers.OnRoundStart;
+			events.Player.Died -= EventHandlers.OnPlayerDeath;
 			EventHandlers = null;
 		}
 	}
