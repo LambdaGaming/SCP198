@@ -4,7 +4,7 @@ EXILED plugin for SCP:SL that has a chance of possessing a picked up item with S
 - When an item gets possessed, all items of that type are possessed as well.
 - Only one type of item will be possessed each round, and only one player will be affected by it each round.
 - If the possessed item is a medical item, gun, grenade, or keycard, attempting to use it will result in death. (Can be configured)
-- Attempting to upgrade a possessed item in SCP-914 while in a players hand has a chance (default 50%) of killing them. Works best with [KadeDev's Common-Utils plugin.](https://github.com/KadeDev/Common-Utils)
+- Attempting to upgrade a possessed item in SCP-914 while in a players hand has a chance (default 50%) of killing them. Works best if the '914-mode' config is set to 'Held' or 'DroppedAndHeld'.
 
 # Notes:
 - See your EXILED config for options to enable/disable specific gamemodes. (Make sure you run the server at least once with the plugin so the configs generate.)
