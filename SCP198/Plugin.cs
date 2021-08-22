@@ -19,9 +19,9 @@ namespace SCP198
 			events.Server.RoundEnded += EventHandlers.OnRoundEnd;
 			events.Player.DroppingItem += EventHandlers.OnItemDrop;
 			events.Player.Shot += EventHandlers.OnShoot;
-			events.Player.ThrowingGrenade += EventHandlers.OnThrowGrenade;
-			events.Player.MedicalItemUsed += EventHandlers.OnMedicalItemUsed;
-			events.Scp914.UpgradingItems += EventHandlers.OnItemUpgrade;
+			events.Player.ThrowingItem += EventHandlers.OnThrowGrenade;
+			events.Player.ItemUsed += EventHandlers.OnItemUsed;
+			events.Scp914.UpgradingInventoryItem += EventHandlers.OnItemUpgrade;
 			events.Player.InteractingDoor += EventHandlers.OnDoorInteract;
 			events.Server.RoundStarted += EventHandlers.OnRoundStart;
 			events.Player.Died += EventHandlers.OnPlayerDeath;
@@ -35,9 +35,9 @@ namespace SCP198
 			events.Server.RoundEnded -= EventHandlers.OnRoundEnd;
 			events.Player.DroppingItem -= EventHandlers.OnItemDrop;
 			events.Player.Shot -= EventHandlers.OnShoot;
-			events.Player.ThrowingGrenade -= EventHandlers.OnThrowGrenade;
-			events.Player.UsingMedicalItem -= EventHandlers.OnMedicalItemUsed;
-			events.Scp914.UpgradingItems -= EventHandlers.OnItemUpgrade;
+			events.Player.ThrowingItem -= EventHandlers.OnThrowGrenade;
+			events.Player.UsingItem -= EventHandlers.OnItemUsed;
+			events.Scp914.UpgradingInventoryItem -= EventHandlers.OnItemUpgrade;
 			events.Player.InteractingDoor -= EventHandlers.OnDoorInteract;
 			events.Server.RoundStarted -= EventHandlers.OnRoundStart;
 			events.Player.Died -= EventHandlers.OnPlayerDeath;

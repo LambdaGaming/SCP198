@@ -12,8 +12,8 @@ namespace SCP198
 		[Description( "Whether or not players should die from shooting a gun possessed by SCP-198." )]
 		public bool ShooterDeath { get; private set; } = true;
 
-		[Description( "Whether or not players should die from using a medical item possessed by SCP-198." )]
-		public bool MedicDeath { get; private set; } = true;
+		[Description( "Whether or not players should die from using an item such as a medkit or adrenaline possessed by SCP-198." )]
+		public bool ItemDeath { get; private set; } = true;
 
 		[Description( "Whether or not players should die from upgrading an item possessed by SCP-198 in SCP-914." )]
 		public bool UpgradeDeath { get; private set; } = true;

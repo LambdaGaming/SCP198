@@ -1,4 +1,5 @@
-﻿using Exiled.API.Features;
+﻿using Enums = Exiled.API.Enums;
+using Exiled.API.Features;
 using Exiled.Events.EventArgs;
 using MEC;
 using System;
@@ -11,38 +12,40 @@ namespace SCP198
 		private Plugin plugin;
 		Random rand = new Random();
 		static bool SCPActive = false;
-		static ItemType SCPID = ItemType.None;
+		static Enums.ItemType SCPID = Enums.ItemType.None;
 		static Player SCPPly = null;
 
 		public EventHandlers( Plugin plugin ) => this.plugin = plugin;
 
-		public bool IsBlacklisted( ItemType item )
+		public bool IsBlacklisted( Enums.ItemType item )
 		{
-			List<ItemType> CustomBlacklist = ConvertToItems( plugin.Config.BlacklistedItems );
-			ItemType[] blacklist = {
-				ItemType.Ammo556, // Ammo is blacklisted since you can't drop it by default
-				ItemType.Ammo762,
-				ItemType.Ammo9mm
+			List<Enums.ItemType> CustomBlacklist = ConvertToItems( plugin.Config.BlacklistedItems );
+			Enums.ItemType[] blacklist = {
+				Enums.ItemType.Ammo556X45, // Ammo is blacklisted since it's not part of the normal inventory
+				Enums.ItemType.Ammo762X39,
+				Enums.ItemType.Ammo9X19,
+				Enums.ItemType.Ammo12Gauge,
+				Enums.ItemType.Ammo44Cal
 			};
 
-			foreach ( ItemType blacklisted in blacklist )
+			foreach ( Enums.ItemType blacklisted in blacklist )
 				if ( blacklisted == item ) return true;
 
 			if ( CustomBlacklist != null && !CustomBlacklist.IsEmpty() )
 			{
-				foreach ( ItemType blacklisted in CustomBlacklist )
+				foreach ( Enums.ItemType blacklisted in CustomBlacklist )
 					if ( blacklisted == item ) return true;
 			}
 			return false;
 		}
 
-		public List<ItemType> ConvertToItems( List<string> blacklist )
+		public List<Enums.ItemType> ConvertToItems( List<string> blacklist )
 		{
 			if ( blacklist == null ) return null;
-			List<ItemType> ItemList = new List<ItemType>();
+			List<Enums.ItemType> ItemList = new List<Enums.ItemType>();
 
 			foreach ( string item in blacklist )
-				ItemList.Add( ( ItemType ) Enum.Parse( typeof( ItemType ), item, true ) );
+				ItemList.Add( ( Enums.ItemType ) Enum.Parse( typeof( Enums.ItemType ), item, true ) );
 
 			return ItemList;
 		}
@@ -51,20 +54,20 @@ namespace SCP198
 		{
 			if ( SCPActive )
 			{
-				if ( ev.Player == SCPPly && ev.Pickup.ItemId == SCPID && !plugin.Config.SuppressNotifications )
-					ev.Player.Broadcast( 6, "<color=red>The " + ev.Player.Inventory.GetItemByID( SCPID ).label + " binds tightly to your hand. You can't seem to remove it...</color>" );
+				if ( ev.Player == SCPPly && ev.Pickup.Type == SCPID && !plugin.Config.SuppressNotifications )
+					ev.Player.Broadcast( 6, "<color=red>The " + ev.Pickup.Type.ToString() + " binds tightly to your hand. You can't seem to remove it...</color>" );
 			}
 			else
 			{
 				int infectchance = rand.Next( 1, 101 );
-				if ( !IsBlacklisted( ev.Pickup.ItemId ) && infectchance <= plugin.Config.PossessionChance )
+				if ( !IsBlacklisted( ev.Pickup.Type ) && infectchance <= plugin.Config.PossessionChance )
 				{
 					SCPActive = true;
-					SCPID = ev.Pickup.ItemId;
+					SCPID = ev.Pickup.Type;
 					SCPPly = ev.Player;
 					if ( !plugin.Config.SuppressNotifications )
 					{
-						ev.Player.Broadcast( 6, "<color=red>The " + ev.Player.Inventory.GetItemByID( SCPID ).label + " binds tightly to your hand. You can't seem to remove it...</color>" );
+						ev.Player.Broadcast( 6, "<color=red>The " + ev.Pickup.Type.ToString() + " binds tightly to your hand. You can't seem to remove it...</color>" );
 					}
 				}
 			}
@@ -80,70 +83,64 @@ namespace SCP198
 
 		public void OnShoot( ShotEventArgs ev )
 		{
-			if ( plugin.Config.ShooterDeath && SCPActive && ev.Shooter == SCPPly && ev.Shooter.Inventory.curItem == SCPID )
+			if ( plugin.Config.ShooterDeath && SCPActive && ev.Shooter == SCPPly && ev.Shooter.CurrentItem.Type == SCPID )
 				Timing.RunCoroutine( KillUser( ev.Shooter ) );
 		}
 
-		public void OnThrowGrenade( ThrowingGrenadeEventArgs ev )
+		public void OnThrowGrenade( ThrowingItemEventArgs ev )
 		{
-			if ( plugin.Config.GrenadeDeath && SCPActive && ev.Player == SCPPly && ev.Player.Inventory.curItem == SCPID )
+			if ( plugin.Config.GrenadeDeath && SCPActive && ev.Player == SCPPly && ev.Player.CurrentItem.Type == SCPID )
 				Timing.RunCoroutine( KillUser( ev.Player ) );
 		}
 
-		public void OnMedicalItemUsed( UsedMedicalItemEventArgs ev )
+		public void OnItemUsed( UsedItemEventArgs ev )
 		{
-			if ( plugin.Config.MedicDeath && SCPActive && ev.Player == SCPPly && ev.Player.Inventory.curItem == SCPID )
+			if ( plugin.Config.ItemDeath && SCPActive && ev.Player == SCPPly && ev.Player.CurrentItem.Type == SCPID )
 				Timing.RunCoroutine( KillUser( ev.Player ) );
 		}
 
 		public void OnDoorInteract( InteractingDoorEventArgs ev )
 		{
-			if ( plugin.Config.KeycardDeath && SCPActive && ev.Player == SCPPly && ev.Player.Inventory.curItem == SCPID )
+			if ( plugin.Config.KeycardDeath && SCPActive && ev.Player == SCPPly && ev.Player.CurrentItem.Type == SCPID )
 				Timing.RunCoroutine( KillUser( ev.Player ) );
 		}
 
-		public void OnItemUpgrade( UpgradingItemsEventArgs ev )
+		public void OnItemUpgrade( UpgradingInventoryItemEventArgs ev )
 		{
 			if ( plugin.Config.UpgradeDeath && SCPActive )
 			{
 				int chance = plugin.Config.UpgradeDeathChance;
 				int randchance = rand.Next( 0, 101 );
-				if ( randchance <= chance )
+				if ( randchance <= chance && ev.Player.CurrentItem.Type == SCPID && ev.Player == SCPPly )
 				{
-					foreach ( Player ply in ev.Players )
-					{
-						if ( ply.Inventory.curItem == SCPID && ply == SCPPly )
-						{
-							Timing.RunCoroutine( KillUser( ply ) );
-						}
-					}
+					Timing.RunCoroutine( KillUser( ev.Player ) );
 				}
 			}
 		}
 
 		public void OnItemDrop( DroppingItemEventArgs ev )
 		{
-			if ( ev.Item.id == SCPID && ev.Player == SCPPly )
+			if ( ev.Item.Type == SCPID && ev.Player == SCPPly )
 			{
 				ev.IsAllowed = false;
 				if ( !plugin.Config.SuppressNotifications )
-					ev.Player.Broadcast( 6, "<color=red>You attempt to remove the " + ev.Player.Inventory.GetItemByID( SCPID ).label + " from your hand but it won't budge.</color>" );
+					ev.Player.Broadcast( 6, "<color=red>You attempt to remove the " + ev.Item.Type.ToString() + " from your hand but it won't budge.</color>" );
 			}
 		}
 
 		public void OnRoundEnd( RoundEndedEventArgs ev )
 		{
 			SCPActive = false;
-			SCPID = ItemType.None;
+			SCPID = Enums.ItemType.None;
 			SCPPly = null;
 		}
 
 		public void OnRoundStart()
 		{
-			if ( SCPActive || SCPID != ItemType.None )
+			if ( SCPActive || SCPID != Enums.ItemType.None )
 			{
 				SCPActive = false;
-				SCPID = ItemType.None;
+				SCPID = Enums.ItemType.None;
 				SCPPly = null;
 				Log.Warn( "SCP-198 was not reset after the round ended. Resetting now..." );
 			}
@@ -154,7 +151,7 @@ namespace SCP198
 			if ( ev.Target == SCPPly )
 			{
 				SCPActive = false;
-				SCPID = ItemType.None;
+				SCPID = Enums.ItemType.None;
 				SCPPly = null;
 			}
 		}
