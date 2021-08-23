@@ -1,5 +1,4 @@
-﻿using Enums = Exiled.API.Enums;
-using Exiled.API.Features;
+﻿using Exiled.API.Features;
 using Exiled.Events.EventArgs;
 using MEC;
 using System;
@@ -12,40 +11,40 @@ namespace SCP198
 		private Plugin plugin;
 		Random rand = new Random();
 		static bool SCPActive = false;
-		static Enums.ItemType SCPID = Enums.ItemType.None;
+		static ItemType SCPID = ItemType.None;
 		static Player SCPPly = null;
 
 		public EventHandlers( Plugin plugin ) => this.plugin = plugin;
 
-		public bool IsBlacklisted( Enums.ItemType item )
+		public bool IsBlacklisted( ItemType item )
 		{
-			List<Enums.ItemType> CustomBlacklist = ConvertToItems( plugin.Config.BlacklistedItems );
-			Enums.ItemType[] blacklist = {
-				Enums.ItemType.Ammo556X45, // Ammo is blacklisted since it's not part of the normal inventory
-				Enums.ItemType.Ammo762X39,
-				Enums.ItemType.Ammo9X19,
-				Enums.ItemType.Ammo12Gauge,
-				Enums.ItemType.Ammo44Cal
+			List<ItemType> CustomBlacklist = ConvertToItems( plugin.Config.BlacklistedItems );
+			ItemType[] blacklist = {
+				ItemType.Ammo556x45, // Ammo is blacklisted since it's not part of the normal inventory
+				ItemType.Ammo762x39,
+				ItemType.Ammo9x19,
+				ItemType.Ammo12gauge,
+				ItemType.Ammo44cal
 			};
 
-			foreach ( Enums.ItemType blacklisted in blacklist )
+			foreach ( ItemType blacklisted in blacklist )
 				if ( blacklisted == item ) return true;
 
 			if ( CustomBlacklist != null && !CustomBlacklist.IsEmpty() )
 			{
-				foreach ( Enums.ItemType blacklisted in CustomBlacklist )
+				foreach ( ItemType blacklisted in CustomBlacklist )
 					if ( blacklisted == item ) return true;
 			}
 			return false;
 		}
 
-		public List<Enums.ItemType> ConvertToItems( List<string> blacklist )
+		public List<ItemType> ConvertToItems( List<string> blacklist )
 		{
 			if ( blacklist == null ) return null;
-			List<Enums.ItemType> ItemList = new List<Enums.ItemType>();
+			List<ItemType> ItemList = new List<ItemType>();
 
 			foreach ( string item in blacklist )
-				ItemList.Add( ( Enums.ItemType ) Enum.Parse( typeof( Enums.ItemType ), item, true ) );
+				ItemList.Add( ( ItemType ) Enum.Parse( typeof( ItemType ), item, true ) );
 
 			return ItemList;
 		}
@@ -131,16 +130,16 @@ namespace SCP198
 		public void OnRoundEnd( RoundEndedEventArgs ev )
 		{
 			SCPActive = false;
-			SCPID = Enums.ItemType.None;
+			SCPID = ItemType.None;
 			SCPPly = null;
 		}
 
 		public void OnRoundStart()
 		{
-			if ( SCPActive || SCPID != Enums.ItemType.None )
+			if ( SCPActive || SCPID != ItemType.None )
 			{
 				SCPActive = false;
-				SCPID = Enums.ItemType.None;
+				SCPID = ItemType.None;
 				SCPPly = null;
 				Log.Warn( "SCP-198 was not reset after the round ended. Resetting now..." );
 			}
@@ -151,7 +150,7 @@ namespace SCP198
 			if ( ev.Target == SCPPly )
 			{
 				SCPActive = false;
-				SCPID = Enums.ItemType.None;
+				SCPID = ItemType.None;
 				SCPPly = null;
 			}
 		}
