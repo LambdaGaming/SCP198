@@ -76,8 +76,6 @@ namespace SCP198
 		{
 			yield return Timing.WaitForSeconds( 0.5f ); // Some events need this small timer or else it won't work
 			ply.Kill( "Attempting to forcefully remove SCP-198" );
-			if ( !plugin.Config.SuppressNotifications )
-				ply.Broadcast( 6, "<color=red>You died attempting to forcefully remove SCP-198.</color>" );
 		}
 
 		public void OnShoot( ShotEventArgs ev )
