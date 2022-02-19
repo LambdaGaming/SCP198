@@ -20,12 +20,12 @@ namespace SCP198
 			events.Player.DroppingItem += EventHandlers.OnItemDrop;
 			events.Player.Shot += EventHandlers.OnShoot;
 			events.Player.ThrowingItem += EventHandlers.OnThrowGrenade;
-			events.Player.ItemUsed += EventHandlers.OnItemUsed;
+			events.Player.UsedItem += EventHandlers.OnItemUsed;
 			events.Scp914.UpgradingInventoryItem += EventHandlers.OnItemUpgrade;
 			events.Player.InteractingDoor += EventHandlers.OnDoorInteract;
 			events.Server.RoundStarted += EventHandlers.OnRoundStart;
 			events.Player.Died += EventHandlers.OnPlayerDeath;
-			Log.Info( $"Successfully loaded." );
+			Log.Info( "Successfully loaded." );
 		}
 
 		public override void OnDisabled()
