@@ -1,5 +1,6 @@
 using Exiled.API.Enums;
 using Exiled.API.Features;
+using System;
 using events = Exiled.Events.Handlers;
 
 namespace SCP198
@@ -7,7 +8,8 @@ namespace SCP198
 	public class Plugin : Plugin<Config>
 	{
 		private EventHandlers EventHandlers;
-
+		public override Version Version { get; } = new Version( 1, 7, 3 );
+		public override Version RequiredExiledVersion { get; } = new Version( 5, 0, 0 );
 		public override PluginPriority Priority { get; } = PluginPriority.Medium;
 
 		public override void OnEnabled()
