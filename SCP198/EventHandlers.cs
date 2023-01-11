@@ -1,5 +1,7 @@
 ﻿using Exiled.API.Features;
-using Exiled.Events.EventArgs;
+using Exiled.Events.EventArgs.Player;
+using Exiled.Events.EventArgs.Scp914;
+using Exiled.Events.EventArgs.Server;
 using MEC;
 using System;
 using System.Collections.Generic;
@@ -80,11 +82,11 @@ namespace SCP198
 
 		public void OnShoot( ShotEventArgs ev )
 		{
-			if ( plugin.Config.ShooterDeath && SCPActive && ev.Shooter == SCPPly && ev.Shooter.CurrentItem.Type == SCPID )
-				Timing.RunCoroutine( KillUser( ev.Shooter ) );
+			if ( plugin.Config.ShooterDeath && SCPActive && ev.Player == SCPPly && ev.Player.CurrentItem.Type == SCPID )
+				Timing.RunCoroutine( KillUser( ev.Player ) );
 		}
 
-		public void OnThrowGrenade( ThrowingItemEventArgs ev )
+		public void OnThrowGrenade( ThrownItemEventArgs ev )
 		{
 			if ( plugin.Config.GrenadeDeath && SCPActive && ev.Player == SCPPly && ev.Player.CurrentItem.Type == SCPID )
 				Timing.RunCoroutine( KillUser( ev.Player ) );
@@ -145,7 +147,7 @@ namespace SCP198
 
 		public void OnPlayerDeath( DiedEventArgs ev )
 		{
-			if ( ev.Target == SCPPly )
+			if ( ev.Player == SCPPly )
 			{
 				SCPActive = false;
 				SCPID = ItemType.None;

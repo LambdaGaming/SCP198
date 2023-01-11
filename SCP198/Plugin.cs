@@ -8,8 +8,8 @@ namespace SCP198
 	public class Plugin : Plugin<Config>
 	{
 		private EventHandlers EventHandlers;
-		public override Version Version { get; } = new Version( 1, 7, 3 );
-		public override Version RequiredExiledVersion { get; } = new Version( 5, 0, 0 );
+		public override Version Version { get; } = new Version( 1, 7, 4 );
+		public override Version RequiredExiledVersion { get; } = new Version( 6, 0, 0 );
 		public override PluginPriority Priority { get; } = PluginPriority.Medium;
 
 		public override void OnEnabled()
@@ -21,7 +21,7 @@ namespace SCP198
 			events.Server.RoundEnded += EventHandlers.OnRoundEnd;
 			events.Player.DroppingItem += EventHandlers.OnItemDrop;
 			events.Player.Shot += EventHandlers.OnShoot;
-			events.Player.ThrowingItem += EventHandlers.OnThrowGrenade;
+			events.Player.ThrownItem += EventHandlers.OnThrowGrenade;
 			events.Player.UsedItem += EventHandlers.OnItemUsed;
 			events.Scp914.UpgradingInventoryItem += EventHandlers.OnItemUpgrade;
 			events.Player.InteractingDoor += EventHandlers.OnDoorInteract;
@@ -37,7 +37,7 @@ namespace SCP198
 			events.Server.RoundEnded -= EventHandlers.OnRoundEnd;
 			events.Player.DroppingItem -= EventHandlers.OnItemDrop;
 			events.Player.Shot -= EventHandlers.OnShoot;
-			events.Player.ThrowingItem -= EventHandlers.OnThrowGrenade;
+			events.Player.ThrownItem -= EventHandlers.OnThrowGrenade;
 			events.Player.UsingItem -= EventHandlers.OnItemUsed;
 			events.Scp914.UpgradingInventoryItem -= EventHandlers.OnItemUpgrade;
 			events.Player.InteractingDoor -= EventHandlers.OnDoorInteract;

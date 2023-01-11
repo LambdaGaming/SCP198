@@ -9,6 +9,9 @@ namespace SCP198
 		[Description( "Indicates whether the plugin is enabled or not" )]
 		public bool IsEnabled { get; set; } = true;
 
+		[Description( "Whether or not debug messages should be shown in the console." )]
+		public bool Debug { get; set; } = false;
+
 		[Description( "Whether or not players should die from shooting a gun possessed by SCP-198." )]
 		public bool ShooterDeath { get; private set; } = true;
 
