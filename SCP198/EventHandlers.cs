@@ -12,21 +12,26 @@ namespace SCP198
 	{
 		private Plugin plugin;
 		Random rand = new Random();
-		static bool SCPActive = false;
-		static ItemType SCPID = ItemType.None;
-		static Player SCPPly = null;
+		static ushort SCPID = 0;
 
 		public EventHandlers( Plugin plugin ) => this.plugin = plugin;
 
 		public bool IsBlacklisted( ItemType item )
 		{
-			List<ItemType> CustomBlacklist = ConvertToItems( plugin.Config.BlacklistedItems );
+			List<ItemType> CustomBlacklist = new List<ItemType>();
+
+			foreach ( string i in plugin.Config.BlacklistedItems )
+				CustomBlacklist.Add( ( ItemType ) Enum.Parse( typeof( ItemType ), i, true ) );
+
 			ItemType[] blacklist = {
-				ItemType.Ammo556x45, // Ammo is blacklisted since it's not part of the normal inventory
+				ItemType.Ammo556x45, // Ammo and armor blacklisted since they're not part of the normal inventory
 				ItemType.Ammo762x39,
 				ItemType.Ammo9x19,
 				ItemType.Ammo12gauge,
-				ItemType.Ammo44cal
+				ItemType.Ammo44cal,
+				ItemType.ArmorCombat,
+				ItemType.ArmorHeavy,
+				ItemType.ArmorLight
 			};
 
 			foreach ( ItemType blacklisted in blacklist )
@@ -40,36 +45,22 @@ namespace SCP198
 			return false;
 		}
 
-		public List<ItemType> ConvertToItems( List<string> blacklist )
+		public void OnItemPickup( ItemAddedEventArgs ev )
 		{
-			if ( blacklist == null ) return null;
-			List<ItemType> ItemList = new List<ItemType>();
-
-			foreach ( string item in blacklist )
-				ItemList.Add( ( ItemType ) Enum.Parse( typeof( ItemType ), item, true ) );
-
-			return ItemList;
-		}
-
-		public void OnItemPickup( PickingUpItemEventArgs ev )
-		{
-			if ( SCPActive )
+			if ( ev.Player == null || ev.Item == null ) return; // Prevents errors caused by picking up items from christmas trees and maybe other stuff too
+			if ( SCPID > 0 )
 			{
-				if ( ev.Player == SCPPly && ev.Pickup.Type == SCPID && !plugin.Config.SuppressNotifications )
-					ev.Player.Broadcast( 6, "<color=red>The " + ev.Pickup.Type.ToString() + " binds tightly to your hand. You can't seem to remove it...</color>" );
+				if ( ev.Item.Serial == SCPID && !plugin.Config.SuppressNotifications )
+					ev.Player.Broadcast( 6, "<color=red>The " + ev.Item.Type.ToString() + " binds tightly to your hand. You can't seem to remove it...</color>" );
 			}
 			else
 			{
 				int infectchance = rand.Next( 1, 101 );
-				if ( !IsBlacklisted( ev.Pickup.Type ) && infectchance <= plugin.Config.PossessionChance )
+				if ( !IsBlacklisted( ev.Item.Type ) && infectchance <= plugin.Config.PossessionChance )
 				{
-					SCPActive = true;
-					SCPID = ev.Pickup.Type;
-					SCPPly = ev.Player;
+					SCPID = ev.Item.Serial;
 					if ( !plugin.Config.SuppressNotifications )
-					{
-						ev.Player.Broadcast( 6, "<color=red>The " + ev.Pickup.Type.ToString() + " binds tightly to your hand. You can't seem to remove it...</color>" );
-					}
+						ev.Player.Broadcast( 6, "<color=red>The " + ev.Item.Type.ToString() + " binds tightly to your hand. You can't seem to remove it...</color>" );
 				}
 			}
 		}
@@ -80,37 +71,33 @@ namespace SCP198
 			ply.Kill( "Attempting to forcefully remove SCP-198" );
 		}
 
-		public void OnShoot( ShotEventArgs ev )
+		public void OnThrowGrenade( ThrowingRequestEventArgs ev )
 		{
-			if ( plugin.Config.ShooterDeath && SCPActive && ev.Player == SCPPly && ev.Player.CurrentItem.Type == SCPID )
-				Timing.RunCoroutine( KillUser( ev.Player ) );
+			if ( ev.Player.CurrentItem.Serial == SCPID )
+			{
+				ev.IsAllowed= false;
+				if ( !plugin.Config.SuppressNotifications )
+					ev.Player.Broadcast( 6, "<color=red>You attempt to throw the item but it just sticks to your hand...</color>" );
+			}
 		}
 
-		public void OnThrowGrenade( ThrownItemEventArgs ev )
+		public void OnItemUse( UsingItemEventArgs ev )
 		{
-			if ( plugin.Config.GrenadeDeath && SCPActive && ev.Player == SCPPly && ev.Player.CurrentItem.Type == SCPID )
-				Timing.RunCoroutine( KillUser( ev.Player ) );
-		}
-
-		public void OnItemUsed( UsedItemEventArgs ev )
-		{
-			if ( plugin.Config.ItemDeath && SCPActive && ev.Player == SCPPly && ev.Player.CurrentItem.Type == SCPID )
-				Timing.RunCoroutine( KillUser( ev.Player ) );
-		}
-
-		public void OnDoorInteract( InteractingDoorEventArgs ev )
-		{
-			if ( plugin.Config.KeycardDeath && SCPActive && ev.Player == SCPPly && ev.Player.CurrentItem.Type == SCPID )
-				Timing.RunCoroutine( KillUser( ev.Player ) );
+			if ( ev.Item.Serial == SCPID && ev.Item.IsConsumable )
+			{
+				ev.IsAllowed = false;
+				if ( !plugin.Config.SuppressNotifications )
+					ev.Player.Broadcast( 6, "<color=red>You attempt to use the item but it just sticks to your hand...</color>" );
+			}
 		}
 
 		public void OnItemUpgrade( UpgradingInventoryItemEventArgs ev )
 		{
-			if ( plugin.Config.UpgradeDeath && SCPActive )
+			if ( ev.Player.CurrentItem.Serial == SCPID )
 			{
-				int chance = plugin.Config.UpgradeDeathChance;
+				double chance = plugin.Config.UpgradeDeathChance;
 				int randchance = rand.Next( 0, 101 );
-				if ( randchance <= chance && ev.Player.CurrentItem.Type == SCPID && ev.Player == SCPPly )
+				if ( randchance <= chance )
 				{
 					Timing.RunCoroutine( KillUser( ev.Player ) );
 				}
@@ -119,7 +106,7 @@ namespace SCP198
 
 		public void OnItemDrop( DroppingItemEventArgs ev )
 		{
-			if ( ev.Item.Type == SCPID && ev.Player == SCPPly )
+			if ( ev.Item.Serial == SCPID )
 			{
 				ev.IsAllowed = false;
 				if ( !plugin.Config.SuppressNotifications )
@@ -129,29 +116,15 @@ namespace SCP198
 
 		public void OnRoundEnd( RoundEndedEventArgs ev )
 		{
-			SCPActive = false;
-			SCPID = ItemType.None;
-			SCPPly = null;
+			SCPID = 0;
 		}
 
 		public void OnRoundStart()
 		{
-			if ( SCPActive || SCPID != ItemType.None )
+			if ( SCPID > 0 )
 			{
-				SCPActive = false;
-				SCPID = ItemType.None;
-				SCPPly = null;
+				SCPID = 0;
 				Log.Warn( "SCP-198 was not reset after the round ended. Resetting now..." );
-			}
-		}
-
-		public void OnPlayerDeath( DiedEventArgs ev )
-		{
-			if ( ev.Player == SCPPly )
-			{
-				SCPActive = false;
-				SCPID = ItemType.None;
-				SCPPly = null;
 			}
 		}
 	}

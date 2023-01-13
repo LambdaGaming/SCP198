@@ -8,7 +8,7 @@ namespace SCP198
 	public class Plugin : Plugin<Config>
 	{
 		private EventHandlers EventHandlers;
-		public override Version Version { get; } = new Version( 1, 7, 4 );
+		public override Version Version { get; } = new Version( 2, 0, 0 );
 		public override Version RequiredExiledVersion { get; } = new Version( 6, 0, 0 );
 		public override PluginPriority Priority { get; } = PluginPriority.Medium;
 
@@ -17,32 +17,26 @@ namespace SCP198
 			base.OnEnabled();
 			EventHandlers = new EventHandlers( this );
 			EventHandlers = new EventHandlers( this );
-			events.Player.PickingUpItem += EventHandlers.OnItemPickup;
+			events.Player.ItemAdded += EventHandlers.OnItemPickup;
 			events.Server.RoundEnded += EventHandlers.OnRoundEnd;
 			events.Player.DroppingItem += EventHandlers.OnItemDrop;
-			events.Player.Shot += EventHandlers.OnShoot;
-			events.Player.ThrownItem += EventHandlers.OnThrowGrenade;
-			events.Player.UsedItem += EventHandlers.OnItemUsed;
+			events.Player.ThrowingRequest += EventHandlers.OnThrowGrenade;
 			events.Scp914.UpgradingInventoryItem += EventHandlers.OnItemUpgrade;
-			events.Player.InteractingDoor += EventHandlers.OnDoorInteract;
 			events.Server.RoundStarted += EventHandlers.OnRoundStart;
-			events.Player.Died += EventHandlers.OnPlayerDeath;
+			events.Player.UsingItem += EventHandlers.OnItemUse;
 			Log.Info( "Successfully loaded." );
 		}
 
 		public override void OnDisabled()
 		{
 			base.OnDisabled();
-			events.Player.PickingUpItem -= EventHandlers.OnItemPickup;
+			events.Player.ItemAdded -= EventHandlers.OnItemPickup;
 			events.Server.RoundEnded -= EventHandlers.OnRoundEnd;
 			events.Player.DroppingItem -= EventHandlers.OnItemDrop;
-			events.Player.Shot -= EventHandlers.OnShoot;
-			events.Player.ThrownItem -= EventHandlers.OnThrowGrenade;
-			events.Player.UsingItem -= EventHandlers.OnItemUsed;
+			events.Player.ThrowingRequest -= EventHandlers.OnThrowGrenade;
 			events.Scp914.UpgradingInventoryItem -= EventHandlers.OnItemUpgrade;
-			events.Player.InteractingDoor -= EventHandlers.OnDoorInteract;
 			events.Server.RoundStarted -= EventHandlers.OnRoundStart;
-			events.Player.Died -= EventHandlers.OnPlayerDeath;
+			events.Player.UsingItem -= EventHandlers.OnItemUse;
 			EventHandlers = null;
 		}
 	}
