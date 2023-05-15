@@ -31,7 +31,11 @@ namespace SCP198
 				ItemType.Ammo44cal,
 				ItemType.ArmorCombat,
 				ItemType.ArmorHeavy,
-				ItemType.ArmorLight
+				ItemType.ArmorLight,
+				ItemType.GrenadeFlash, // Grenades cannot be blocked from being thrown due to a base game bug, so blacklist them for now
+				ItemType.GrenadeHE,
+				ItemType.SCP018,
+				ItemType.SCP2176
 			};
 
 			foreach ( ItemType blacklisted in blacklist )
@@ -73,12 +77,13 @@ namespace SCP198
 
 		public void OnThrowGrenade( ThrowingRequestEventArgs ev )
 		{
-			if ( ev.Player.CurrentItem.Serial == SCPID )
+			// Temporarily disabled due to a bug with the base game
+			/*if ( ev.Player.CurrentItem.Serial == SCPID )
 			{
 				ev.IsAllowed= false;
 				if ( !plugin.Config.SuppressNotifications )
 					ev.Player.Broadcast( 6, "<color=red>You attempt to throw the item but it just sticks to your hand...</color>" );
-			}
+			}*/
 		}
 
 		public void OnItemUse( UsingItemEventArgs ev )
