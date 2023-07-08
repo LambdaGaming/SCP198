@@ -51,7 +51,10 @@ namespace SCP198
 
 		public void OnItemPickup( ItemAddedEventArgs ev )
 		{
-			if ( ev.Player == null || ev.Item == null ) return; // Prevents errors caused by picking up items from christmas trees and maybe other stuff too
+			// Prevents errors caused by picking up invalid items, and prevents starting items from being infected
+			if ( ev.Player == null || ev.Item == null || ev.Pickup == null )
+				return;
+
 			if ( SCPID > 0 )
 			{
 				if ( ev.Item.Serial == SCPID && !plugin.Config.SuppressNotifications )
@@ -115,7 +118,7 @@ namespace SCP198
 			{
 				ev.IsAllowed = false;
 				if ( !plugin.Config.SuppressNotifications )
-					ev.Player.Broadcast( 6, string.Format( plugin.Config.BroadcastPickup, ev.Item.Type.ToString() ), shouldClearPrevious: true );
+					ev.Player.Broadcast( 6, string.Format( plugin.Config.BroadcastDrop, ev.Item.Type.ToString() ), shouldClearPrevious: true );
 			}
 		}
 
