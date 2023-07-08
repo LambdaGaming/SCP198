@@ -55,7 +55,7 @@ namespace SCP198
 			if ( SCPID > 0 )
 			{
 				if ( ev.Item.Serial == SCPID && !plugin.Config.SuppressNotifications )
-					ev.Player.Broadcast( 6, "<color=red>The " + ev.Item.Type.ToString() + " binds tightly to your hand. You can't seem to remove it...</color>" );
+					ev.Player.Broadcast( 6, string.Format( plugin.Config.BroadcastPickup, ev.Item.Type.ToString() ) );
 			}
 			else
 			{
@@ -64,7 +64,7 @@ namespace SCP198
 				{
 					SCPID = ev.Item.Serial;
 					if ( !plugin.Config.SuppressNotifications )
-						ev.Player.Broadcast( 6, "<color=red>The " + ev.Item.Type.ToString() + " binds tightly to your hand. You can't seem to remove it...</color>" );
+						ev.Player.Broadcast( 6, string.Format( plugin.Config.BroadcastPickup, ev.Item.Type.ToString() ) );
 				}
 			}
 		}
@@ -72,7 +72,7 @@ namespace SCP198
 		public IEnumerator<float> KillUser( Player ply )
 		{
 			yield return Timing.WaitForSeconds( 0.5f ); // Some events need this small timer or else it won't work
-			ply.Kill( "Attempting to forcefully remove SCP-198" );
+			ply.Kill( plugin.Config.DeathMessage );
 		}
 
 		public void OnThrowGrenade( ThrowingRequestEventArgs ev )
@@ -80,9 +80,9 @@ namespace SCP198
 			// Temporarily disabled due to a bug with the base game
 			/*if ( ev.Player.CurrentItem.Serial == SCPID )
 			{
-				ev.IsAllowed= false;
+				ev.IsAllowed = false;
 				if ( !plugin.Config.SuppressNotifications )
-					ev.Player.Broadcast( 6, "<color=red>You attempt to throw the item but it just sticks to your hand...</color>", shouldClearPrevious: true );
+					ev.Player.Broadcast( 6, plugin.Config.BroadcastGrenadeThrow, shouldClearPrevious: true );
 			}*/
 		}
 
@@ -92,7 +92,7 @@ namespace SCP198
 			{
 				ev.IsAllowed = false;
 				if ( !plugin.Config.SuppressNotifications )
-					ev.Player.Broadcast( 6, "<color=red>You attempt to use the item but it just sticks to your hand...</color>", shouldClearPrevious: true );
+					ev.Player.Broadcast( 6, plugin.Config.BroadcastItemUse, shouldClearPrevious: true );
 			}
 		}
 
@@ -115,7 +115,7 @@ namespace SCP198
 			{
 				ev.IsAllowed = false;
 				if ( !plugin.Config.SuppressNotifications )
-					ev.Player.Broadcast( 6, "<color=red>You attempt to remove the " + ev.Item.Type.ToString() + " from your hand but it won't budge.</color>", shouldClearPrevious: true );
+					ev.Player.Broadcast( 6, string.Format( plugin.Config.BroadcastPickup, ev.Item.Type.ToString() ), shouldClearPrevious: true );
 			}
 		}
 
