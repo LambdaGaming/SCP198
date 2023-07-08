@@ -11,8 +11,8 @@ namespace SCP198
 	public class EventHandlers
 	{
 		private Plugin plugin;
-		Random rand = new Random();
-		static ushort SCPID = 0;
+		private Random rand = new Random();
+		private static ushort SCPID = 0;
 
 		public EventHandlers( Plugin plugin ) => this.plugin = plugin;
 
@@ -82,7 +82,7 @@ namespace SCP198
 			{
 				ev.IsAllowed= false;
 				if ( !plugin.Config.SuppressNotifications )
-					ev.Player.Broadcast( 6, "<color=red>You attempt to throw the item but it just sticks to your hand...</color>" );
+					ev.Player.Broadcast( 6, "<color=red>You attempt to throw the item but it just sticks to your hand...</color>", shouldClearPrevious: true );
 			}*/
 		}
 
@@ -92,7 +92,7 @@ namespace SCP198
 			{
 				ev.IsAllowed = false;
 				if ( !plugin.Config.SuppressNotifications )
-					ev.Player.Broadcast( 6, "<color=red>You attempt to use the item but it just sticks to your hand...</color>" );
+					ev.Player.Broadcast( 6, "<color=red>You attempt to use the item but it just sticks to your hand...</color>", shouldClearPrevious: true );
 			}
 		}
 
@@ -115,7 +115,7 @@ namespace SCP198
 			{
 				ev.IsAllowed = false;
 				if ( !plugin.Config.SuppressNotifications )
-					ev.Player.Broadcast( 6, "<color=red>You attempt to remove the " + ev.Item.Type.ToString() + " from your hand but it won't budge.</color>" );
+					ev.Player.Broadcast( 6, "<color=red>You attempt to remove the " + ev.Item.Type.ToString() + " from your hand but it won't budge.</color>", shouldClearPrevious: true );
 			}
 		}
 
