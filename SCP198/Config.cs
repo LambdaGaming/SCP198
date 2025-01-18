@@ -13,7 +13,7 @@ namespace SCP198
 		public bool Debug { get; set; } = false;
 
 		[Description( "Chance of an item getting possessed by SCP-198 when picked up by a player." )]
-		public double PossessionChance { get; private set; } = 0.1;
+		public double PossessionChance { get; private set; } = 1;
 
 		[Description( "Chance of player dying when upgrading a possessed item in SCP-914. (Set to -1 to disable)" )]
 		public double UpgradeDeathChance { get; private set; } = 50;
