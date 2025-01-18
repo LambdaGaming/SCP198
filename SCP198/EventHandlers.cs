@@ -1,4 +1,5 @@
-﻿using Exiled.API.Features;
+﻿using Exiled.API.Enums;
+using Exiled.API.Features;
 using Exiled.Events.EventArgs.Player;
 using Exiled.Events.EventArgs.Scp914;
 using Exiled.Events.EventArgs.Server;
@@ -80,13 +81,12 @@ namespace SCP198
 
 		public void OnThrowGrenade( ThrowingRequestEventArgs ev )
 		{
-			// Temporarily disabled due to a bug with the base game
-			/*if ( ev.Player.CurrentItem.Serial == SCPID )
+			if ( ev.Player.CurrentItem.Serial == SCPID )
 			{
-				ev.IsAllowed = false;
+				ev.RequestType = ThrowRequest.CancelThrow;
 				if ( !plugin.Config.SuppressNotifications )
 					ev.Player.Broadcast( 6, plugin.Config.BroadcastGrenadeThrow, shouldClearPrevious: true );
-			}*/
+			}
 		}
 
 		public void OnItemUse( UsingItemEventArgs ev )
