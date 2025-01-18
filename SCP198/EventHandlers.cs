@@ -33,7 +33,7 @@ namespace SCP198
 				ItemType.ArmorCombat,
 				ItemType.ArmorHeavy,
 				ItemType.ArmorLight,
-				ItemType.GrenadeFlash, // Grenades cannot be blocked from being thrown due to a base game bug, so blacklist them for now
+				ItemType.GrenadeFlash, // Throwables cannot be blocked from being used
 				ItemType.GrenadeHE,
 				ItemType.SCP018,
 				ItemType.SCP2176
@@ -79,16 +79,6 @@ namespace SCP198
 			ply.Kill( plugin.Config.DeathMessage );
 		}
 
-		public void OnThrowGrenade( ThrowingRequestEventArgs ev )
-		{
-			if ( ev.Player.CurrentItem.Serial == SCPID )
-			{
-				ev.RequestType = ThrowRequest.CancelThrow;
-				if ( !plugin.Config.SuppressNotifications )
-					ev.Player.Broadcast( 6, plugin.Config.BroadcastGrenadeThrow, shouldClearPrevious: true );
-			}
-		}
-
 		public void OnItemUse( UsingItemEventArgs ev )
 		{
 			if ( ev.Item.Serial == SCPID && ev.Item.IsConsumable )
@@ -122,18 +112,9 @@ namespace SCP198
 			}
 		}
 
-		public void OnRoundEnd( RoundEndedEventArgs ev )
-		{
-			SCPID = 0;
-		}
-
 		public void OnRoundStart()
 		{
-			if ( SCPID > 0 )
-			{
-				SCPID = 0;
-				Log.Warn( "SCP-198 was not reset after the round ended. Resetting now..." );
-			}
+			SCPID = 0;
 		}
 	}
 }

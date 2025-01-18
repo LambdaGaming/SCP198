@@ -30,9 +30,6 @@ namespace SCP198
 		[Description( "Broadcast message that displays when an item infected with SCP-198 is picked up. Use {0} for the name of the item." )]
 		public string BroadcastPickup { get; private set; } = "<color=red>The {0} binds tightly to your hand. You can't seem to remove it...</color>";
 
-		[Description( "Broadcast message that displays when a player tries to throw a grenade that's infected with SCP-198." )]
-		public string BroadcastGrenadeThrow { get; private set; } = "<color=red>You attempt to throw the grenade but it just sticks to your hand...</color>";
-
 		[Description( "Broadcast message that displays when a player tries to use an item that's infected with SCP-198." )]
 		public string BroadcastItemUse { get; private set; } = "<color=red>You attempt to use the item but it just sticks to your hand...</color>";
 
