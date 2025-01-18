@@ -12,8 +12,8 @@ namespace SCP198
 		[Description( "Whether or not debug messages should be shown in the console." )]
 		public bool Debug { get; set; } = false;
 
-		[Description( "Chance of an item getting possessed by SCP-198 when picked up by a player." )]
-		public double PossessionChance { get; private set; } = 1;
+		[Description( "Chance of an item getting possessed by SCP-198 when picked up by a player. Must be between 0-100 and can be a decimal." )]
+		public double PossessionChance { get; private set; } = 0.5;
 
 		[Description( "Chance of player dying when upgrading a possessed item in SCP-914. (Set to -1 to disable)" )]
 		public double UpgradeDeathChance { get; private set; } = 50;

@@ -63,7 +63,7 @@ namespace SCP198
 			}
 			else
 			{
-				int infectchance = rand.Next( 1, 101 );
+				double infectchance = rand.NextDouble() * 100;
 				if ( !IsBlacklisted( ev.Item.Type ) && infectchance <= plugin.Config.PossessionChance )
 				{
 					SCPID = ev.Item.Serial;
