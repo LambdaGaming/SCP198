@@ -1,8 +1,6 @@
-﻿using Exiled.API.Enums;
-using Exiled.API.Features;
+﻿using Exiled.API.Features;
 using Exiled.Events.EventArgs.Player;
 using Exiled.Events.EventArgs.Scp914;
-using Exiled.Events.EventArgs.Server;
 using MEC;
 using System;
 using System.Collections.Generic;
