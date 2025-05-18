@@ -44,8 +44,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="Exiled.API">
-      <HintPath>\\server-pc\SCPSL\PluginAPI\plugins\global\dependencies\Exiled.API.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>\\server-pc\SCPSL\LabAPI\dependencies\global\Exiled.API.dll</HintPath>
     </Reference>
     <Reference Include="Exiled.Events">
       <HintPath>\\server-pc\EXILED\Plugins\Exiled.Events.dll</HintPath>
