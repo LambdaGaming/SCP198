@@ -23,7 +23,7 @@ namespace SCP198
 				CustomBlacklist.Add( ( ItemType ) Enum.Parse( typeof( ItemType ), i, true ) );
 
 			// Blacklist ammo and armor since they aren't part of the normal inventory
-			// Also blacklist throwables since there's a bug that prevents their use from being blocked
+			// Also blacklist throwables since their use can't be blocked
 			if ( item.IsAmmo() || item.IsArmor() || item.IsThrowable() )
 				return true;
 
