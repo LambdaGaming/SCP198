@@ -1,4 +1,5 @@
-﻿using Exiled.API.Features;
+﻿using Exiled.API.Extensions;
+using Exiled.API.Features;
 using Exiled.Events.EventArgs.Player;
 using Exiled.Events.EventArgs.Scp914;
 using MEC;
@@ -18,27 +19,13 @@ namespace SCP198
 		public bool IsBlacklisted( ItemType item )
 		{
 			List<ItemType> CustomBlacklist = new List<ItemType>();
-
 			foreach ( string i in plugin.Config.BlacklistedItems )
 				CustomBlacklist.Add( ( ItemType ) Enum.Parse( typeof( ItemType ), i, true ) );
 
-			ItemType[] blacklist = {
-				ItemType.Ammo556x45, // Ammo and armor blacklisted since they're not part of the normal inventory
-				ItemType.Ammo762x39,
-				ItemType.Ammo9x19,
-				ItemType.Ammo12gauge,
-				ItemType.Ammo44cal,
-				ItemType.ArmorCombat,
-				ItemType.ArmorHeavy,
-				ItemType.ArmorLight,
-				ItemType.GrenadeFlash, // Throwables cannot be blocked from being used
-				ItemType.GrenadeHE,
-				ItemType.SCP018,
-				ItemType.SCP2176
-			};
-
-			foreach ( ItemType blacklisted in blacklist )
-				if ( blacklisted == item ) return true;
+			// Blacklist ammo and armor since they aren't part of the normal inventory
+			// Also blacklist throwables since there's a bug that prevents their use from being blocked
+			if ( item.IsAmmo() || item.IsArmor() || item.IsThrowable() )
+				return true;
 
 			if ( CustomBlacklist != null && !CustomBlacklist.IsEmpty() )
 			{
