@@ -7,3 +7,6 @@ EXILED plugin for SCP:SL that has a chance of possessing a picked up item with S
 - If the possessed item is a consumable, that item cannot be used.
 - Only a single item can be possessed each round. Possessed items will keep their status for the remainder of the round, even if they are dropped when a player dies.
 - Attempting to upgrade a possessed item in SCP-914 while in a players hand has a chance (default 50%) of killing them. Only works if the '914-mode' setting in the server config is set to 'Held' or 'DroppedAndHeld'.
+
+## Contributing
+ Contributions are welcome! Please read through the [guidelines](https://lambdagaming.github.io/guides/contributing) before submitting an issue or pull request.
