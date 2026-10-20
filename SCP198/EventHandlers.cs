@@ -9,14 +9,14 @@ namespace SCP198;
 public class EventHandlers
 {
 	private Plugin plugin;
-	private Random rand = new Random();
+	private Random rand = new();
 	private static ushort SCPID = 0;
 
 	public EventHandlers( Plugin plugin ) => this.plugin = plugin;
 
 	public bool IsBlacklisted( ItemType item )
 	{
-		List<ItemType> CustomBlacklist = new List<ItemType>();
+		List<ItemType> CustomBlacklist = [];
 		foreach ( string i in plugin.Config.BlacklistedItems )
 			CustomBlacklist.Add( ( ItemType ) Enum.Parse( typeof( ItemType ), i, true ) );
 
@@ -25,7 +25,7 @@ public class EventHandlers
 		if ( item.IsAmmo() || item.IsArmor() || item.IsThrowable() )
 			return true;
 
-		if ( CustomBlacklist != null && !CustomBlacklist.IsEmpty() )
+		if ( !CustomBlacklist.IsEmpty() )
 		{
 			foreach ( ItemType blacklisted in CustomBlacklist )
 				if ( blacklisted == item ) return true;
@@ -42,7 +42,7 @@ public class EventHandlers
 		if ( SCPID > 0 )
 		{
 			if ( ev.Item.Serial == SCPID && !plugin.Config.SuppressNotifications )
-				ev.Player.Broadcast( 6, string.Format( plugin.Config.BroadcastPickup, ev.Item.Type.ToString() ) );
+				ev.Player.Broadcast( 6, string.Format( plugin.Config.BroadcastPickup, RealNames.Get( ev.Item.Type ) ) );
 		}
 		else
 		{
@@ -51,7 +51,7 @@ public class EventHandlers
 			{
 				SCPID = ev.Item.Serial;
 				if ( !plugin.Config.SuppressNotifications )
-					ev.Player.Broadcast( 6, string.Format( plugin.Config.BroadcastPickup, ev.Item.Type.ToString() ) );
+					ev.Player.Broadcast( 6, string.Format( plugin.Config.BroadcastPickup, RealNames.Get( ev.Item.Type ) ) );
 			}
 		}
 	}
@@ -91,7 +91,7 @@ public class EventHandlers
 		{
 			ev.IsAllowed = false;
 			if ( !plugin.Config.SuppressNotifications )
-				ev.Player.Broadcast( 6, string.Format( plugin.Config.BroadcastDrop, ev.Item.Type.ToString() ), shouldClearPrevious: true );
+				ev.Player.Broadcast( 6, string.Format( plugin.Config.BroadcastDrop, RealNames.Get( ev.Item.Type ) ), shouldClearPrevious: true );
 		}
 	}
 
